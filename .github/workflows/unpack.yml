@@ -1,0 +1,31 @@
+name: Extract project files
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Flutter project
+        run: |
+          unzip -o sayyad_prices_source.zip -d .
+          mkdir -p /tmp/backend
+          unzip -o sayyad_prices_backend.zip -d /tmp/backend
+          cp -R /tmp/backend/supabase .
+          cp /tmp/backend/backend_api_contract.md .
+          cp /tmp/backend/README.md BACKEND_SETUP.md
+
+      - name: Save extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Extract app and backend files" || echo "No changes"
+          git push
